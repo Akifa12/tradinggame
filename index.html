@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultra-Minimal Trading Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #0D1117;
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            position: fixed;
+            touch-action: none;
+        }
+        
+        .app-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .hud {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 20px;
+            z-index: 10;
+            background: rgba(13, 17, 23, 0.9);
+            backdrop-filter: blur(10px);
+            gap: 20px;
+        }
+        
+        .hud-button {
+            background: #238636;
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: 500;
+            min-width: 80px;
+            transition: background 0.2s;
+        }
+
+        .hud-button.left {
+            position: absolute;
+            left: 20px;
+        }
+
+        .hud-button.right {
+            position: absolute;
+            right: 20px;
+        }
+        
+        .hud-button:hover {
+            background: #2ea043;
+        }
+        
+        .hud-button:active {
+            transform: scale(0.98);
+        }
+        
+        .stake-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .market-section {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .market-label {
+            color: #8b949e;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .eth-logo {
+            width: 20px;
+            height: 20px;
+        }
+
+        .pair-label {
+            background: #161b22;
+            border: 1px solid #30363d;
+            color: white;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .market-dropdown {
+            background: #161b22;
+            border: 1px solid #30363d;
+            color: white;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .market-dropdown:hover {
+            border-color: #238636;
+        }
+
+        .crypto-logo {
+            width: 20px;
+            height: 20px;
+        }
+
+        .trade-size-section {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .trade-label {
+            color: #8b949e;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .dollar-sign {
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .stake-input {
+            background: #161b22;
+            border: 1px solid #30363d;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 16px;
+            width: 80px;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .stake-input:focus {
+            outline: none;
+            border-color: #238636;
+        }
+            
+            .player-info {
+        position: absolute;
+        top: 60px;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: 12px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+        background: rgba(13, 17, 23, 0.8);
+        backdrop-filter: blur(10px);
+        }
+
+        .player-count-container {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: white;
+        }
+
+        .player-icon {
+            font-size: 16px;
+        }
+                
+        .balance-hud {
+            color: #22C55E;
+            font-weight: 600;
+        }
+        
+        .game-container {
+            position: absolute;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 375px;
+            height: 400px;
+            z-index: 5;
+        }
+        
+        .game-canvas {
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .balance-badge {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #238636;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: 600;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(35, 134, 54, 0.3);
+        }
+        
+        .launch-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #0D1117;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+        }
+        
+        .launch-button {
+            background: #238636;
+            border: none;
+            color: white;
+            padding: 20px 40px;
+            border-radius: 12px;
+            font-size: 20px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 8px 24px rgba(35, 134, 54, 0.3);
+        }
+        
+        .launch-button:hover {
+            background: #2ea043;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(35, 134, 54, 0.4);
+        }
+        
+        .launch-button:active {
+            transform: translateY(0);
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 30;
+            backdrop-filter: blur(10px);
+        }
+        
+        .modal-content {
+            background: #0D1117;
+            border: 1px solid #30363d;
+            border-radius: 16px;
+            padding: 24px;
+            width: 90%;
+            max-width: 350px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-header {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+            color: white;
+        }
+        
+        .qr-container {
+            display: flex;
+            justify-content: center;
+            margin: 24px 0;
+        }
+        
+        .qr-placeholder {
+            width: 200px;
+            height: 200px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0D1117;
+            font-size: 14px;
+            text-align: center;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+        
+        .close-modal {
+            background: #30363d;
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        
+        .close-modal:hover {
+            background: #484f58;
+        }
+        
+        .bet-box {
+            position: absolute;
+            width: 70px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #0D1117;
+            font-size: 12px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            pointer-events: none;
+            line-height: 1.3;
+            text-align: center;
+            z-index: 8;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+             transition: background 0.3s, color 0.3s;  /* ✅ Sirf color change slow ho */
+             will-change: transform;  /* ✅ Browser ko pehle se bata diya ke transform hoga */
+        }
+        
+        .bet-box.win {
+            background: #22C55E;
+            color: white;
+            animation: winPulse 0.5s ease-out;
+        }
+        
+        .bet-box.lose {
+            background: #EF4444;
+            color: white;
+            animation: losePulse 0.5s ease-out;
+        }
+        
+        @keyframes winPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes losePulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.8); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Toast notifications */
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 24px;
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 25;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            animation: toastSlideUp 0.3s ease-out;
+            min-width: 150px;      /* ← YE LINE ADD KARO */
+            text-align: center;    /* ← AUR YE LINE */
+        }
+                
+        .toast.win {
+            background: #22C55E;
+        }
+        
+        .toast.lose {
+            background: #EF4444;
+        }
+        
+        @keyframes toastSlideUp {
+            from {
+                transform: translateX(-50%) translateY(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(-50%) translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        /* Price tags that ride the mid-line */
+        .price-tag {
+            position: absolute;
+            background: rgba(13, 17, 23, 0.9);
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 3px;
+            border: 1px solid #30363d;
+            z-index: 6;
+            pointer-events: none;
+            transition: color 0.3s ease;  /* ⬅️ BAS YEH LINE ADD KAREIN */
+        }
+                
+        .price-tag.left {
+            left: 5px;
+        }
+        
+        .price-tag.right {
+            right: 5px;
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 375px) {
+            .game-container {
+                width: 100vw;
+                left: 0;
+                transform: none;
+                padding: 0 10px;
+            }
+            
+            .hud {
+                padding: 0 15px;
+            }
+            
+            .hud-button {
+                padding: 6px 12px;
+                font-size: 13px;
+                min-width: 70px;
+            }
+            
+            .stake-input {
+                width: 70px;
+                font-size: 14px;
+            }
+        }
+        
+        /* Prevent text selection on mobile */
+        * {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        
+        input {
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
+
+        /* Player Leaderboard Box */
+            .leaderboard-box {
+                position: absolute;
+                left: 20px;
+                top: 300px;
+                transform: translateY(-50%);
+                width: 200px;
+                height: 400px;
+                background: linear-gradient(135deg, rgba(35, 134, 54, 0.1) 0%, rgba(13, 17, 23, 0.95) 50%);
+                border: 1px solid #30363d;
+                border-radius: 12px;
+                backdrop-filter: blur(10px);
+                z-index: 9;
+                overflow: hidden;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            }
+
+            .leaderboard-header {
+                background: rgba(0, 0, 0, 1);
+                padding: 12px;
+                text-align: center;
+                border-bottom: 1px solid #30363d;
+                font-weight: 600;
+                font-size: 14px;
+                color: #22C55E;
+                position: sticky;        
+                top: 0;                  
+                z-index: 10;             
+                backdrop-filter: blur(10px);  
+            }
+
+            .leaderboard-content {
+                height: calc(100% - 45px);
+                overflow-y: auto;
+                overflow-x: hidden;
+                padding: 8px;
+                animation: smoothScroll 40s linear infinite;
+                position: relative;
+            }
+
+            .leaderboard-content:hover {
+                animation-play-state: paused;
+            }
+
+            @keyframes smoothScroll {
+                0% { transform: translateY(0); }
+                100% { transform: translateY(-50%); }
+            }
+
+            .player-item {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 8px;
+                margin-bottom: 6px;
+                background: rgba(22, 27, 34, 0.6);
+                border-radius: 8px;
+                border: 1px solid rgba(48, 54, 61, 0.5);
+                
+            }
+
+            .player-avatar {
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 16px;
+                flex-shrink: 0;
+            }
+
+            .player-info-text {
+                flex: 1;
+                min-width: 0;
+            }
+
+            .player-name {
+                font-size: 12px;
+                font-weight: 600;
+                color: white;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .player-stats {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                margin-top: 2px;
+            }
+
+            .player-time {
+                font-size: 10px;
+                color: #8b949e;
+            }
+
+            .player-winrate {
+                font-size: 10px;
+                padding: 2px 6px;
+                border-radius: 4px;
+                font-weight: 600;
+            }
+
+            .player-winrate.high {
+                background: rgba(34, 197, 94, 0.2);
+                color: #22C55E;
+            }
+
+            .player-winrate.medium {
+                background: rgba(234, 179, 8, 0.2);
+                color: #EAB308;
+            }
+
+            .player-winrate.low {
+                background: rgba(239, 68, 68, 0.2);
+                color: #EF4444;
+            }
+
+            /* Scrollbar styling */
+            .leaderboard-content::-webkit-scrollbar {
+                width: 4px;
+            }
+
+            .leaderboard-content::-webkit-scrollbar-track {
+                background: rgba(22, 27, 34, 0.3);
+            }
+
+            .leaderboard-content::-webkit-scrollbar-thumb {
+                background: #30363d;
+                border-radius: 2px;
+            }
+
+            .leaderboard-content::-webkit-scrollbar-thumb:hover {
+                background: #484f58;
+            }
+
+    </style>
+        </head>
+        <body>
+            <div id="app">
+                <div class="launch-screen" id="launchScreen">
+                    <button class="launch-button" id="launchButton">Launch Game</button>
+                </div>
+                
+                <div class="app-container hidden" id="gameApp">
+                   
+                    <div class="hud">
+                    <button class="hud-button left" id="withdrawBtn">🏦 Withdraw</button>
+                    <div class="stake-container">
+                    
+                    <div class="market-section">
+                    <span class="market-label">Market:</span>
+                    <svg class="crypto-logo" id="cryptoLogo" width="20" height="20" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M15.927 23.959l-9.823-5.797 9.817 13.839 9.828-13.839-9.828 5.797zM16.073 0l-9.819 16.297 9.819 5.807 9.823-5.801z" fill="#8A92B2"/>
+                    </svg>
+                    <select class="market-dropdown" id="marketDropdown">
+                        <option value="SOL">SOL/USDC</option>
+                        <option value="ETH" selected>ETH/USDC</option>
+                        <option value="BTC">BTC/USDC</option>
+                    </select>
+                </div>
+
+                <div class="trade-size-section">
+                <span class="trade-label">Trade size:</span>
+                <input 
+                    type="number" 
+                    class="stake-input" 
+                    id="stakeInput"
+                    value="2.50"
+                    min="0.5"
+                    max="12"
+                    step="0.1"
+                >
+                <span class="dollar-sign">$</span>
+            </div>
+                            
+                <button class="hud-button right" id="depositBtn">💰 Deposit</button>
+            </div>
+                    
+                    <div class="player-info" id="playerInfo">
+                                <div class="player-count-container">
+                    <span class="player-icon">👥</span>
+                    <span id="playerCount">12 players online</span>
+                </div>
+                        <span class="balance-hud" id="balanceHud">Balance: 42.30 USDC</span>
+                    </div>
+                    
+                    <!-- Player Leaderboard -->
+                    <div class="leaderboard-box">
+                        <div class="leaderboard-header">👥 LIVE PLAYERS</div>
+                        <div class="leaderboard-content" id="leaderboardContent">
+                            <!-- Players will be added here dynamically -->
+                        </div>
+                    </div>
+
+                    <div class="game-container">
+                    <svg
+                        class="game-canvas"
+                        id="gameCanvas"
+                        viewBox="0 0 375 400"
+                        width="375"
+                        height="400"
+                        >
+                        
+                        
+                <!-- Main area background (dark) -->
+                <rect x="0" y="0" width="315" height="400" fill="#0D1117" />
+
+                <!-- Finish zone area (grey) -->
+                <rect x="315" y="0" width="60" height="400" fill="#2A2A2A" />
+
+                <!-- Dynamic green bar -->
+                <rect id="greenBar" x="0" y="170" width="315" height="30" fill="#22C55E" opacity="0.40" />
+
+                <!-- Dynamic red bar -->
+                <rect id="redBar" x="0" y="202" width="315" height="30" fill="#EF4444" opacity="0.40" />
+
+                <!-- White mid-line -->
+                <line id="midLine" x1="0" y1="200" x2="375" y2="200" stroke="white" stroke-width="2" />
+
+                <!-- Finish line -->
+                <g id="checkeredLine">
+                    <rect x="313" y="0" width="5" height="20" fill="black"/>
+                    <rect x="313" y="20" width="5" height="20" fill="white"/>
+                    <rect x="313" y="40" width="5" height="20" fill="black"/>
+                    <rect x="313" y="60" width="5" height="20" fill="white"/>
+                    <rect x="313" y="80" width="5" height="20" fill="black"/>
+                    <rect x="313" y="100" width="5" height="20" fill="white"/>
+                    <rect x="313" y="120" width="5" height="20" fill="black"/>
+                    <rect x="313" y="140" width="5" height="20" fill="white"/>
+                    <rect x="313" y="160" width="5" height="20" fill="black"/>
+                    <rect x="313" y="180" width="5" height="20" fill="white"/>
+                    <rect x="313" y="200" width="5" height="20" fill="black"/>
+                    <rect x="313" y="220" width="5" height="20" fill="white"/>
+                    <rect x="313" y="240" width="5" height="20" fill="black"/>
+                    <rect x="313" y="260" width="5" height="20" fill="white"/>
+                    <rect x="313" y="280" width="5" height="20" fill="black"/>
+                    <rect x="313" y="300" width="5" height="20" fill="white"/>
+                    <rect x="313" y="320" width="5" height="20" fill="black"/>
+                    <rect x="313" y="340" width="5" height="20" fill="white"/>
+                    <rect x="313" y="360" width="5" height="20" fill="black"/>
+                    <rect x="313" y="380" width="5" height="20" fill="white"/>
+                </g>
+
+                <!-- TOP horizontal shadow -->
+                <line id="topShadow" x1="0" y1="170" x2="375" y2="170" stroke="#000" stroke-width="1" opacity="0.25" filter="url(#softBlur)" />
+
+                <!-- LEFT vertical shadow -->
+                <line id="leftShadow" x1="5" y1="0" x2="5" y2="400" stroke="#000" stroke-width="3" opacity="0.18" filter="url(#softBlur)" />
+
+                <!-- Soft-blur filter -->
+                <defs>
+                    <filter id="softBlur" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="2" />
+                    </filter>
+                </defs>
+                </svg>
+                
+                <!-- Price tags that ride the mid-line -->
+                <div class="price-tag left" id="leftPriceTag">$2,500.00</div>
+                <div class="price-tag right" id="rightPriceTag">$2,500.00</div>
+            </div>
+            
+        </div>
+        
+        <!-- Deposit Modal -->
+        <div class="modal hidden" id="depositModal">
+            <div class="modal-content">
+                <div class="modal-header">Deposit USDC</div>
+                <div class="qr-container">
+                    <div class="qr-placeholder">
+                        QR Code<br><br>
+                        solana:4zMMC9...<br><br>
+                        Amount: <span id="depositAmount">2.50</span> USDC
+                    </div>
+                </div>
+                <button class="close-modal" id="closeDeposit">Close</button>
+            </div>
+        </div>
+        
+        <!-- Withdraw Modal -->
+        <div class="modal hidden" id="withdrawModal">
+            <div class="modal-content">
+                <div class="modal-header">Withdraw USDC</div>
+                <div class="qr-container">
+                    <div class="qr-placeholder">
+                        QR Code<br><br>
+                        Withdraw <span id="withdrawAmount">2.50</span> USDC<br><br>
+                        Scan with Phantom
+                    </div>
+                </div>
+                <button class="close-modal" id="closeWithdraw">Close</button>
+            </div>
+        </div>
+        
+        <!-- Toast container -->
+        <div id="toastContainer"></div>
+    </div>
+
+    <script>
+        class TradingGame {
+            constructor() {
+                this.launched = false;
+                this.balance = 42.30;
+                this.stake = 2.50;
+                this.boxes = [];
+                this.currentMarket = 'ETH';
+                this.currentPrice = 2500.00;
+                this.playerCount = 12;
+                this.animationTime = 0;
+                this.midLineY = 200;
+                this.gameLoopId = null;
+                this.toastContainer = null;
+                
+                this.initializeElements();
+                this.bindEvents();
+                this.startMockUpdates();
+                this.initializePlayers();
+            }
+            
+            initializeElements() {
+                this.launchScreen = document.getElementById('launchScreen');
+                this.gameApp = document.getElementById('gameApp');
+                this.launchButton = document.getElementById('launchButton');
+                this.gameCanvas = document.getElementById('gameCanvas');
+                this.greenBar = document.getElementById('greenBar');
+                this.redBar = document.getElementById('redBar');
+                this.midLine = document.getElementById('midLine');
+                this.stakeInput = document.getElementById('stakeInput');
+                this.balanceHud = document.getElementById('balanceHud');
+                this.playerCountDisplay = document.getElementById('playerCount');
+                this.leftPriceTag = document.getElementById('leftPriceTag');
+                this.rightPriceTag = document.getElementById('rightPriceTag');
+                this.toastContainer = document.getElementById('toastContainer');
+                this.marketDropdown = document.getElementById('marketDropdown');
+                this.cryptoLogo = document.getElementById('cryptoLogo');
+                
+                // Modal elements
+                this.depositModal = document.getElementById('depositModal');
+                this.withdrawModal = document.getElementById('withdrawModal');
+                this.depositBtn = document.getElementById('depositBtn');
+                this.withdrawBtn = document.getElementById('withdrawBtn');
+                this.closeDeposit = document.getElementById('closeDeposit');
+                this.closeWithdraw = document.getElementById('closeWithdraw');
+                this.depositAmount = document.getElementById('depositAmount');
+                this.withdrawAmount = document.getElementById('withdrawAmount');
+            }
+            
+            bindEvents() {
+                this.launchButton.addEventListener('click', () => this.launchGame());
+                this.gameCanvas.addEventListener('click', (e) => this.handleCanvasClick(e));
+                this.stakeInput.addEventListener('change', (e) => this.updateStake(e));
+                this.marketDropdown.addEventListener('change', (e) => this.changeMarket(e.target.value));
+    
+    
+                // Modal events
+                this.depositBtn.addEventListener('click', () => this.showDepositModal());
+                this.withdrawBtn.addEventListener('click', () => this.showWithdrawModal());
+                this.closeDeposit.addEventListener('click', () => this.hideDepositModal());
+                this.closeWithdraw.addEventListener('click', () => this.hideWithdrawModal());
+                
+                // Close modals on background click
+                this.depositModal.addEventListener('click', (e) => {
+                    if (e.target === this.depositModal) this.hideDepositModal();
+                });
+                this.withdrawModal.addEventListener('click', (e) => {
+                    if (e.target === this.withdrawModal) this.hideWithdrawModal();
+                });
+            }
+            
+            launchGame() {
+                this.launched = true;
+                this.launchScreen.classList.add('hidden');
+                this.gameApp.classList.remove('hidden');
+                this.startAnimation();
+            }
+            
+            startAnimation() {
+                const animate = () => {
+                    this.animationTime += 1;
+                    
+                    // Calculate new Y position using sine wave
+                    this.midLineY = 200 + 80 * Math.sin(this.animationTime / 600);
+
+                    // ---------- NEW DYNAMIC BARS ----------
+                    const direction = Math.sin(this.animationTime / 600) -
+                                    Math.sin((this.animationTime - 2) / 600);
+
+                    const greenH = Math.max(0, this.midLineY);
+                    const greenY = 0;
+
+                    // RED: height = distance from mid-line to BOTTOM (grows UP)
+                    const redH = Math.max(0, 400 - this.midLineY);
+                    const redY = this.midLineY;
+
+
+                    this.greenBar.setAttribute('y',      greenY);
+                    this.greenBar.setAttribute('height', greenH);
+                    this.redBar.setAttribute('y',      redY);
+                    this.redBar.setAttribute('height', redH);
+
+                    // update white mid-line
+                    this.midLine.setAttribute('y1', this.midLineY);
+                    this.midLine.setAttribute('y2', this.midLineY);
+
+                    // keep shadows glued to the band
+                    document.getElementById('topShadow')
+                            .setAttribute('y1', this.midLineY - 30);
+                    document.getElementById('topShadow')
+                            .setAttribute('y2', this.midLineY - 30);
+                    // Update price tags position
+                    this.leftPriceTag.style.top = (this.midLineY - 8) + 'px';
+                    this.rightPriceTag.style.top = (this.midLineY - 8) + 'px';
+                    
+                    // Update box positions
+                    this.updateBoxes();
+                    
+                    this.gameLoopId = requestAnimationFrame(animate);
+                };
+                
+                animate();
+            }
+            
+            handleCanvasClick(e) {
+                if (!this.launched) return;
+                
+                const rect = this.gameCanvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                // Scale coordinates to SVG viewBox
+                const scaleX = 375 / rect.width;
+                const scaleY = 400 / rect.height;
+                const svgX = x * scaleX;
+                const svgY = y * scaleY;
+                
+                // Green area: 0 to midLineY, Red area: midLineY to 400
+                const isInGreenArea = svgY < this.midLineY;
+                const isInRedArea = svgY > this.midLineY;
+                
+                // Check if click is before finish line
+                if (svgX >= 0 && svgX <= 315) {
+                    if (isInGreenArea) {
+                        this.placeBet(svgX, svgY, 'long');
+                    } else if (isInRedArea) {
+                        this.placeBet(svgX, svgY, 'short');
+                    }
+                }
+            }
+            
+            placeBet(x, y, side) {
+            const box = {
+                id: Date.now() + Math.random(),
+                x: 0,
+                y: y - 10,
+                stake: this.stake,
+                side: side, // 'long' or 'short'
+                entryPrice: this.currentPrice, // Store current price at entry
+                settled: false,
+                element: null
+            };
+            
+            this.createBoxElement(box);
+            this.boxes.push(box);
+        }
+            
+            createBoxElement(box) {
+            const boxElement = document.createElement('div');
+            boxElement.className = 'bet-box';
+            boxElement.style.left = box.x + 'px';
+            boxElement.style.top = box.y + 'px';
+            
+            // Show trade type
+            const tradeType = box.side === 'long' ? '📈' : '📉';
+            boxElement.innerHTML = `${tradeType} $${box.stake.toFixed(2)}<br>${box.entryPrice.toFixed(0)}`;
+            
+            // Position relative to game container
+            const gameContainer = document.querySelector('.game-container');
+            gameContainer.appendChild(boxElement);
+            
+            box.element = boxElement;
+        }
+            
+            updateBoxes() {
+    for (let i = 0; i < this.boxes.length; i++) {
+        const box = this.boxes[i];
+        
+        if (!box.settled) {
+            box.x += 2;
+    
+            if (box.element) {
+                box.element.style.left = box.x + 'px';
+            }
+    
+            // Check if box reached finish line
+            if (box.x >= 315) {
+                box.settled = true;
+                
+                // Calculate profit/loss based on mid-line movement
+                let won = false;
+                if (box.side === 'long') {
+                    won = this.currentPrice > box.entryPrice;
+                } else if (box.side === 'short') {
+                    won = this.currentPrice < box.entryPrice;
+                }                
+                
+                if (box.element) {
+                    box.element.classList.add(won ? 'win' : 'lose');
+                }
+                
+                // Update balance (without blocking)
+                const stakeAmount = box.stake;
+                const isWin = won;
+                
+                setTimeout(() => {
+                    if (isWin) {
+                        this.balance += stakeAmount;
+                        this.showToast('CREDITED', '+' + stakeAmount.toFixed(2), true);
+                    } else {
+                        this.balance -= stakeAmount;
+                        this.showToast('DEBITED', '-' + stakeAmount.toFixed(2), false);
+                    }
+                    this.updateBalanceDisplay();
+                }, 0);
+                
+                // Remove box after animation
+                setTimeout(() => {
+                    if (box.element && box.element.parentNode) {
+                        box.element.remove();
+                    }
+                }, 1000);
+                
+                // Mark for removal
+                this.boxes.splice(i, 1);
+                i--;
+            }
+        }
+    }
+}
+            
+            updateStake(e) {
+                const value = parseFloat(e.target.value) || 0.5;
+                this.stake = Math.max(0.5, Math.min(12, value));
+                e.target.value = this.stake.toFixed(2);
+            }
+            
+           updateBalanceDisplay() {
+                this.balanceHud.textContent = 'Balance: ' + this.balance.toFixed(2) + ' USDC';
+            }
+            
+            showToast(title, amount, isWin) {
+                const toast = document.createElement('div');
+                toast.className = `toast ${isWin ? 'win' : 'lose'}`;
+                toast.textContent = `${title} ${amount}`;
+                
+                this.toastContainer.appendChild(toast);
+                
+                // Remove toast after 3 seconds
+                setTimeout(() => {
+                    toast.style.animation = 'toastSlideUp 0.3s ease-out reverse';
+                    setTimeout(() => {
+                        if (toast.parentNode) {
+                            toast.parentNode.removeChild(toast);
+                        }
+                    }, 300);
+                }, 3000);
+            }
+            
+            showDepositModal() {
+                this.depositAmount.textContent = this.stake.toFixed(2);
+                this.depositModal.classList.remove('hidden');
+            }
+            
+            hideDepositModal() {
+                this.depositModal.classList.add('hidden');
+            }
+            
+            showWithdrawModal() {
+                this.withdrawAmount.textContent = this.stake.toFixed(2);
+                this.withdrawModal.classList.remove('hidden');
+            }
+            
+            hideWithdrawModal() {
+                this.withdrawModal.classList.add('hidden');
+            }
+            
+            changeMarket(market) {
+                this.currentMarket = market;
+                
+                // Proper SVG logos with correct viewBox attributes
+                if (market === 'SOL') {
+                    // Solana logo
+                    this.cryptoLogo.setAttribute('viewBox', '0 0 397.7 311.7');
+                    this.cryptoLogo.innerHTML = '<defs><linearGradient id="solGradient" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#00FFA3;stop-opacity:1" /><stop offset="100%" style="stop-color:#DC1FFF;stop-opacity:1" /></linearGradient></defs><path fill="url(#solGradient)" d="M64.6 237.9c2.4-2.4 5.7-3.8 9.2-3.8h317.4c5.8 0 8.7 7 4.6 11.1l-62.7 62.7c-2.4 2.4-5.7 3.8-9.2 3.8H6.5c-5.8 0-8.7-7-4.6-11.1l62.7-62.7z"/><path fill="url(#solGradient)" d="M64.6 3.8C67.1 1.4 70.4 0 73.8 0h317.4c5.8 0 8.7 7 4.6 11.1l-62.7 62.7c-2.4 2.4-5.7 3.8-9.2 3.8H6.5c-5.8 0-8.7-7-4.6-11.1L64.6 3.8z"/><path fill="url(#solGradient)" d="M333.1 120.1c-2.4-2.4-5.7-3.8-9.2-3.8H6.5c-5.8 0-8.7 7-4.6 11.1l62.7 62.7c2.4 2.4 5.7 3.8 9.2 3.8h317.4c5.8 0 8.7-7 4.6-11.1l-62.7-62.7z"/>';
+                } else if (market === 'ETH') {
+                    // Ethereum logo
+                    this.cryptoLogo.setAttribute('viewBox', '0 0 32 32');
+                    this.cryptoLogo.innerHTML = '<path d="M15.927 23.959l-9.823-5.797 9.817 13.839 9.828-13.839-9.828 5.797zM16.073 0l-9.819 16.297 9.819 5.807 9.823-5.801z" fill="#8A92B2"/>';
+                } else if (market === 'BTC') {
+                    // Bitcoin logo
+                    this.cryptoLogo.setAttribute('viewBox', '0 0 32 32');
+                    this.cryptoLogo.innerHTML = '<circle cx="16" cy="16" r="15" fill="#F7931A"/><path d="M20.8 14.5c.4-1.2.2-2.4-.5-3.3-1-1.3-2.7-1.8-4.3-1.8V7.2h-2v2.1h-1.6V7.2h-2v2.1H8.2v2.1h1.4c.6 0 1 .4 1 1v8.4c0 .6-.4 1-1 1H8.2v2.1h2.2v2.1h2v-2.1h1.6v2.1h2v-2.2c2.2-.1 3.9-1 4.5-2.7.4-1.2.2-2.5-.5-3.4.6-.6 1-1.5 1.2-2.6zm-9.2 7.3v-3.6c0-.3.2-.5.5-.5h2.1c.9 0 1.6.7 1.6 1.6s-.7 1.6-1.6 1.6h-2.1c-.3-.1-.5-.3-.5-.6zm3.7-6.8h-2.1c-.3 0-.5-.2-.5-.5v-3.1c0-.3.2-.5.5-.5h2.1c.9 0 1.6.7 1.6 1.6 0 .8-.7 1.5-1.6 1.5z" fill="white"/>';
+                }
+                
+                // Update price based on market
+                var basePrices = {
+                    'SOL': 150,
+                    'ETH': 2500,
+                    'BTC': 65000
+                };
+                
+                this.currentPrice = basePrices[market];
+                this.leftPriceTag.textContent = '$' + this.currentPrice.toFixed(2);
+                this.rightPriceTag.textContent = '$' + this.currentPrice.toFixed(2);
+            }
+                            
+            
+            startMockUpdates() {
+                // Mock price updates
+                let displayedPrice = this.currentPrice;
+                
+                // âœ… STEP 2B: Actual price update (fast) - market-based volatility
+                setInterval(() => {
+                    const volatility = {
+                        'SOL': 2,      // ±$2
+                        'ETH': 10,     // ±$10
+                        'BTC': 100     // ±$100
+                    };
+                    const change = volatility[this.currentMarket] || 10;
+                    this.currentPrice += (Math.random() - 0.5) * change;
+                }, 400);    
+                
+                // ✅ STEP 2C: Display price update (smooth tween animation)
+                setInterval(() => {
+                    const oldDisplayPrice = displayedPrice;
+                    const targetPrice = this.currentPrice;
+                    const diff = targetPrice - displayedPrice;
+                    
+                    // Smoothly move towards target (20% of difference each frame)
+                    displayedPrice += diff * 0.2;
+                    
+                    // Update price tags with smooth value
+                    this.leftPriceTag.textContent = '$' + displayedPrice.toFixed(2);
+                    this.rightPriceTag.textContent = '$' + displayedPrice.toFixed(2);
+                    
+                    // Update colors based on direction
+                    if (displayedPrice > oldDisplayPrice) {
+                        this.leftPriceTag.style.color = '#22C55E';
+                        this.rightPriceTag.style.color = '#22C55E';
+                    } else if (displayedPrice < oldDisplayPrice) {
+                        this.leftPriceTag.style.color = '#EF4444';
+                        this.rightPriceTag.style.color = '#EF4444';
+                    } else {
+                        this.leftPriceTag.style.color = 'white';
+                        this.rightPriceTag.style.color = 'white';
+                    }
+                }, 50);  // Fast refresh for smooth animation
+                
+                // Mock player count updates
+                setInterval(() => {
+                    this.playerCount = Math.max(1, this.playerCount + Math.floor(Math.random() * 3) - 1);
+                    this.playerCountDisplay.textContent = this.playerCount + ' players online';
+                }, 2000);
+            }
+        
+            initializePlayers() {
+                    this.players = [];
+                    this.leaderboardContent = document.getElementById('leaderboardContent');
+                    
+                    // Player name templates
+                    const names = [
+                        'Crypto King', 'Moon Walker', 'Diamond Hands', 'Whale Hunter',
+                        'Degen Trader', 'Bull Master', 'Bear Slayer', 'Profit Ninja',
+                        'Leverage Lord', 'Chart Wizard', 'Pump Chaser', 'Bag Holder',
+                        'HODL Hero', 'Swing Master', 'Day Trader', 'Scalp God'
+                    ];
+                    
+                    // Emoji avatars with gradient backgrounds
+                    const avatars = [
+                        { emoji: '🚀', bg: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
+                        { emoji: '💎', bg: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' },
+                        { emoji: '🐋', bg: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' },
+                        { emoji: '🔥', bg: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)' },
+                        { emoji: '⚡', bg: 'linear-gradient(135deg, #30cfd0 0%, #330867 100%)' },
+                        { emoji: '🎯', bg: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)' },
+                        { emoji: '👑', bg: 'linear-gradient(135deg, #ffd89b 0%, #19547b 100%)' },
+                        { emoji: '🦅', bg: 'linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%)' },
+                        { emoji: '🌟', bg: 'linear-gradient(135deg, #fddb92 0%, #d1fdff 100%)' },
+                        { emoji: '💰', bg: 'linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)' }
+                    ];
+                    
+                    // Generate 10 initial players
+                    for (let i = 0; i < 10; i++) {
+                        const name = names[Math.floor(Math.random() * names.length)];
+                        const avatar = avatars[Math.floor(Math.random() * avatars.length)];
+                        const winRate = Math.floor(Math.random() * 60) + 30; // 30-90%
+                        const joinTime = new Date(Date.now() - Math.random() * 3600000); // Random time in last hour
+                        
+                        this.players.push({
+                            id: Date.now() + i,
+                            name: name,
+                            avatar: avatar,
+                            winRate: winRate,
+                            joinTime: joinTime
+                        });
+                    }
+                    
+                    // Render initial players
+                    this.renderPlayers();
+                    
+                    // Duplicate content for infinite scroll effect
+                    setTimeout(() => {
+                        const originalContent = this.leaderboardContent.innerHTML;
+                        // Duplicate content 2 times for seamless scroll
+                        this.leaderboardContent.innerHTML = originalContent + originalContent;
+                    }, 100);
+                    
+                    // Add new players periodically
+                    setInterval(() => {
+                        this.addRandomPlayer();
+                    }, 8000);
+                }
+
+                renderPlayers() {
+                    this.leaderboardContent.innerHTML = '';
+                    
+                    this.players.forEach(player => {
+                        const playerEl = this.createPlayerElement(player);
+                        this.leaderboardContent.appendChild(playerEl);
+                    });
+                }
+
+                createPlayerElement(player) {
+                    const div = document.createElement('div');
+                    div.className = 'player-item';
+                    
+                    const timeDiff = Math.floor((Date.now() - player.joinTime) / 60000); // minutes ago
+                    const timeText = timeDiff < 1 ? 'Just now' : `${timeDiff}m ago`;
+                    
+                    let winRateClass = 'low';
+                    if (player.winRate >= 70) winRateClass = 'high';
+                    else if (player.winRate >= 50) winRateClass = 'medium';
+                    
+                    div.innerHTML = `
+                        <div class="player-avatar" style="background: ${player.avatar.bg}">
+                            ${player.avatar.emoji}
+                        </div>
+                        <div class="player-info-text">
+                            <div class="player-name">${player.name}</div>
+                            <div class="player-stats">
+                                <span class="player-time">${timeText}</span>
+                                <span class="player-winrate ${winRateClass}">${player.winRate}% W</span>
+                            </div>
+                        </div>
+                    `;
+                    
+                    return div;
+                }
+
+                addRandomPlayer() {
+                    const names = [
+                        'Crypto King', 'Moon Walker', 'Diamond Hands', 'Whale Hunter',
+                        'Degen Trader', 'Bull Master', 'Bear Slayer', 'Profit Ninja'
+                    ];
+                    
+                    const avatars = [
+                        { emoji: '🚀', bg: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
+                        { emoji: '💎', bg: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' },
+                        { emoji: '🐋', bg: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' },
+                        { emoji: '🔥', bg: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)' }
+                    ];
+                    
+                    const name = names[Math.floor(Math.random() * names.length)];
+                    const avatar = avatars[Math.floor(Math.random() * avatars.length)];
+                    const winRate = Math.floor(Math.random() * 60) + 30;
+                    
+                    // Remove oldest player
+                    if (this.players.length >= 10) {
+                        this.players.shift();
+                    }
+                    
+                    // Add new player
+                    this.players.push({
+                        id: Date.now(),
+                        name: name,
+                        avatar: avatar,
+                        winRate: winRate,
+                        joinTime: new Date()
+                    });
+                    
+                    // Re-render
+                    this.renderPlayers();
+                    
+                    // Duplicate for scroll
+                    setTimeout(() => {
+                        const originalContent = this.leaderboardContent.innerHTML;
+                        // Duplicate content 2 times for seamless scroll
+                        this.leaderboardContent.innerHTML = originalContent + originalContent;
+                    }, 100);
+                }
+        }
+
+        
+        
+        // Initialize game when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            new TradingGame();
+        });
+        
+        // Prevent scrolling and zooming on mobile
+        document.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+        }, { passive: false });
+        
+        document.addEventListener('gesturestart', (e) => {
+            e.preventDefault();
+        });
+    </script>
+</body>
+</html>
