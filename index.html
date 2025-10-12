@@ -47,7 +47,7 @@
         }
         
         .hud-button {
-            background:rgba(192, 244, 85, 0.90);
+            background:rgba(150, 255, 44, 1);
             border: none;
             color: rgb(0, 0, 0);
             padding: 8px 16px;
@@ -187,7 +187,7 @@
         }
                 
         .balance-hud {
-            color: rgba(192, 244, 85, 0.90);
+            color: rgba(150, 255, 44, 1);
             font-weight: 600;
         }
         
@@ -214,7 +214,7 @@
             bottom: 30px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(192, 244, 85, 0.90);
+            background: rgba(150, 255, 44, 1);
             padding: 10px 20px;
             border-radius: 20px;
             font-size: 16px;
@@ -237,7 +237,7 @@
         }
         
         .launch-button {
-            background: rgba(192, 244, 85, 0.90);
+            background: rgba(150, 255, 44, 1);
             border: none;
             color: rgb(0, 0, 0);
             padding: 20px 40px;
@@ -351,7 +351,7 @@
         }
         
         .bet-box.win {
-            background: rgba(192, 244, 85, 0.90);
+            background: rgba(150, 255, 44, 1);
             color: rgb(0, 0, 0);
             animation: winPulse 0.5s ease-out;
         }
@@ -393,7 +393,7 @@
         }
                 
         .toast.win {
-            background: rgba(192, 244, 85, 0.90);
+            background: rgba(150, 255, 44, 1);
         }
         
         .toast.lose {
@@ -630,15 +630,16 @@
                 position: absolute;
                 left: 50%;
                 bottom: auto;
-                top: 400px;
+                top: 390px;
                 width: 35px;
                 height: 35px;
                 margin-left: -237px;
-                background: rgba(192, 244, 85, 0.90);
+                background: rgba(150, 255, 44, 1);
                 border: none;
                 border-radius: 6px;
                 color: rgb(0, 0, 0);
                 font-size: 16px;
+                font-weight: bolder;
                 cursor: pointer;
                 z-index: 8;
                 display: flex;
@@ -649,7 +650,7 @@
             }
 
             .center-button:hover {
-                background: #2ea043;
+                background: rgba(150, 255, 44, 0.9);
                 transform: scale(1.05);
             }
 
@@ -676,7 +677,7 @@
             }
 
         /* =========  MOBILE  ≤ 768 px  ========= */
-            /* =========  MOBILE  ≤ 768 px  ========= */
+           
 @media (max-width: 768px) {
 
   /* Prevent accidental highlights */
@@ -699,8 +700,8 @@
     background: rgba(13, 17, 23, 0.96) !important;
     backdrop-filter: blur(10px) !important;
     flex-wrap: nowrap !important;
-  flex-direction: row !important;
-  justify-content: flex-start !important;
+     flex-direction: row !important;
+    justify-content: flex-start !important;
   }
 
   .hud-button {
@@ -782,7 +783,7 @@
 
   .balance-hud {
     font-size: 10px !important;
-    color: rgba(192, 244, 85, 0.90)
+    color: rgba(150, 255, 44, 1)
   }
 
   /* ==== 4. Game Area ==== */
@@ -875,7 +876,7 @@
     font-size: 12px !important;
     height: 40px !important;
     text-align: center !important;
-    color: #22C55E !important;
+    color: rgba(150, 255, 44, 1) !important;
     background: rgba(0, 0, 0, 0.8) !important;
     border-bottom: 1px solid #30363d !important;
   }
@@ -998,7 +999,7 @@
                 <rect x="315" y="0" width="60" height="400" fill="#2A2A2A" />
 
                 <!-- Dynamic green bar -->
-                <rect id="greenBar" x="0" y="170" width="315" height="30" fill="#c0f455" opacity="0.90" />
+                <rect id="greenBar" x="0" y="170" width="315" height="30" fill="#96FF2C" opacity="1" />
 
                 <!-- Dynamic red bar -->
                 <rect id="redBar" x="0" y="202" width="315" height="30" fill="#f948aa" opacity="0.90" />
