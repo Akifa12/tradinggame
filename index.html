@@ -90,7 +90,7 @@
         }
 
         .market-label {
-            color: #ffffff;
+            color: #8b949e;
             font-size: 12px;
             font-weight: 500;
         }
@@ -137,7 +137,7 @@
         }
 
         .trade-label {
-            color: #ffffff;
+            color: #8b949e;
             font-size: 12px;
             font-weight: 500;
         }
@@ -696,10 +696,10 @@
     left: 0 !important;
     right: 0 !important;
     height: 55px !important;
-    padding: 3px 5px !important;
+    padding: 6px 8px !important;
     display: flex !important;
     align-items: center !important;
-    gap: 2px !important;
+    gap: 6px !important;
     z-index: 100 !important;
     background: rgba(13, 17, 23, 0.96) !important;
     backdrop-filter: blur(10px) !important;
@@ -710,10 +710,10 @@
 
   .hud-button {
     position: static !important;
-    font-size: 8px !important;
-    padding: 5px 6px !important;
+    font-size: 11px !important;
+    padding: 6px 10px !important;
     border-radius: 6px !important;
-    min-width: 60px !important;
+    min-width: 70px !important;
     flex-shrink: 0 !important;
   }
 
@@ -724,20 +724,20 @@
     flex-direction: row !important;
     align-items: center !important;
     justify-content: flex-start !important;
-    gap: 5px !important;
+    gap: 6px !important;
     flex-wrap: nowrap !important;
   }
 
   .market-section, .trade-size-section {
     display: flex !important;
     align-items: center !important;
-    gap: 3px !important;
+    gap: 4px !important;
     flex-shrink: 0 !important;
   }
 
   .market-label, .trade-label {
     font-size: 10px !important;
-    color: #ffffff !important;
+    color: #8b949e !important;
     white-space: nowrap !important;
   }
 
@@ -788,8 +788,6 @@
   .balance-hud {
     font-size: 10px !important;
     color: #22C55E !important;
-
-
   }
 
   /* ==== 4. Game Area ==== */
@@ -812,11 +810,11 @@
 
   /* ==== 5. Price Scale (Left Edge) ==== */
   .price-scale {
-    position:relative !important;
+    position: absolute !important;
     left: 0 !important;
-    top: 100px !important;
+    top: 0 !important;
     width: 55px !important;
-    height: 50% !important;
+    height: 100% !important;
     margin: 0 !important;
     transform: none !important;
     background: rgba(13, 17, 23, 0.95) !important;
