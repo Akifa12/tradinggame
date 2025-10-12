@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ultra-Minimal Trading Game</title>
     <style>
         * {
@@ -77,23 +76,6 @@
         .hud-button:active {
             transform: scale(0.98);
         }
-        @media (max-width: 375px) {
-            .hud {
-                padding: 0 10px;
-                gap: 10px;
-                font-size: 11px;
-            }
-            .market-dropdown,
-            .stake-input {
-                font-size: 11px;
-                padding: 4px 6px;
-            }
-            .hud-button {
-                padding: 6px 10px;
-                font-size: 11px;
-                min-width: 60px;
-            }
-            }
         
         .stake-container {
             display: flex;
@@ -461,30 +443,6 @@
             right: 5px;
         }
         
-        /* Mobile optimizations */
-        @media (max-width: 375px) {
-            .game-container {
-                width: 100vw;
-                left: 0;
-                transform: none;
-                padding: 0 10px;
-            }
-            
-            .hud {
-                padding: 0 15px;
-            }
-            
-            .hud-button {
-                padding: 6px 12px;
-                font-size: 13px;
-                min-width: 70px;
-            }
-            
-            .stake-input {
-                width: 70px;
-                font-size: 14px;
-            }
-        }
         
         /* Prevent text selection on mobile */
         * {
@@ -672,19 +630,6 @@
                 background: #484f58;
             }
 
-            @media (max-width: 375px) {
-                .price-scale {
-                    width: 40px;               /* thinner */
-                    margin-left: -227px;       /* re-centre over game-box */
-                }
-                .price-tick {
-                    font-size: 8px;            /* smaller text */
-                }
-                .price-tick.major {
-                    font-size: 9px;
-                }
-                }
-
             /* Center Button */
             .center-button {
                 position: absolute;
@@ -735,31 +680,102 @@
                 background: #484f58;
             }
 
+        /* =========  MOBILE  ≤ 768 px  ========= */
+        @media (max-width: 768px) {
 
-            /* ======  PHONE  –  bottom drawer  ====== */
-            @media (max-width: 375px) {
-            .leaderboard-box {
-                position: fixed;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                top: auto;
-                width: 100%;
-                height: 180px;          /* peek height */
-                border-radius: 12px 12px 0 0;
-                transform: none;
-                z-index: 15;
-            }
-            .leaderboard-content {
-                height: 130px;
-                animation: none;        /* stop auto-scroll */
-            }
-            /* hide on tap (optional) */
-            .leaderboard-box:active {
-                height: 60px;
-            }
-            }
+        /* ---- 1.  HUD : keep buttons, shrink height ---- */
+        .hud {
+            height: 50px;
+            padding: 0 8px;
+            gap: 6px;
+            font-size: 11px;
+        }
+        .hud-button {
+            padding: 6px 10px;
+            font-size: 11px;
+            min-width: 5000px;
+        }
+        .hud-button.left  { left: 8px; }
+        .hud-button.right { right: 8px; }
 
+        /* ---- 2.  Market + Trade size same row ---- */
+        .stake-container {
+            flex: 1 1 auto;
+            justify-content: space-between;
+        }
+        .market-dropdown,
+        .stake-input {
+            font-size: 11px;
+            padding: 4px 6px;
+        }
+        .stake-input { width: 65px; }
+
+        /* ---- 3.  Player info under HUD ---- */
+        .player-info { top: 50px; }
+
+        /* ---- 4.  Game board : full width / height ---- */
+        .game-container {
+            left: 0;
+            transform: none;
+            width: 100vw;
+            height: calc(100vh - 210px);   /* 50 HUD + 20 player-info + 160 drawer */
+            top: 70px;
+            padding: 0;
+        }
+        .game-canvas { border-radius: 0; }
+
+        /* ---- 5.  Price scale : small & left ---- */
+        .price-scale {
+            display: block !important;          /* make sure it is visible */
+            left: 0;
+            margin-left: 0;
+            width: 50px;
+            height: 100%;
+            top: 0;
+            transform: none;
+        }
+        .price-tick { font-size: 9px; }
+        .center-button {
+            left: 55px;                /* just right of scale */
+            margin-left: 0;
+            bottom: 20px;
+            top: auto;
+        }
+
+        /* ---- 6.  Leader-board : bottom drawer ---- */
+        .leaderboard-box {
+            position: fixed !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            top: auto !important;
+            width: 100vw !important;
+            height: 160px !important;
+            border-radius: 12px 12px 0 0;
+            transform: none !important;
+            z-index: 999 !important;        /* highest */
+            margin: 0 !important;
+        }
+        .leaderboard-header { padding: 8px; font-size: 12px; }
+        .leaderboard-content {
+            height: calc(100% - 45px);
+            animation: none;               /* stop battery-eater scroll */
+            padding: 4px;
+        }
+        .player-item { padding: 6px; margin-bottom: 4px; }
+        .player-avatar { width: 28px; height: 28px; font-size: 14px; }
+        .player-name { font-size: 11px; }
+        .player-time, .player-winrate { font-size: 9px; }
+
+        /* ---- 7.  Toast above drawer ---- */
+        .toast { bottom: 170px; }
+
+        /* ---- 8.  Bet boxes smaller ---- */
+        .bet-box { width: 60px; height: 28px; font-size: 10px; }
+
+        /* ---- 9.  Kill horizontal scroll ---- */
+        body { overflow-x: hidden; }
+        }
     </style>
         </head>
         <body>
