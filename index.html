@@ -681,102 +681,240 @@
             }
 
         /* =========  MOBILE  ≤ 768 px  ========= */
-        @media (max-width: 768px) {
+            /* =========  MOBILE  ≤ 768 px  ========= */
+@media (max-width: 768px) {
 
-        /* ---- 1.  HUD : keep buttons, shrink height ---- */
-        .hud {
-            height: 50px;
-            padding: 0 8px;
-            gap: 6px;
-            font-size: 11px;
-        }
-        .hud-button {
-            padding: 6px 10px;
-            font-size: 11px;
-            min-width: 60px;
-        }
-        .hud-button.left  { left: 8px; }
-        .hud-button.right { right: 8px; }
+  /* Prevent accidental highlights */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
 
-        /* ---- 2.  Market + Trade size same row ---- */
-        .stake-container {
-            flex: 1 1 auto;
-            justify-content: space-between;
-        }
-        .market-dropdown,
-        .stake-input {
-            font-size: 11px;
-            padding: 4px 6px;
-        }
-        .stake-input { width: 65px; }
+  /* ==== 1. HUD (Top Bar) ==== */
+  .hud {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 55px !important;
+    padding: 6px 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 6px !important;
+    z-index: 100 !important;
+    background: rgba(13, 17, 23, 0.96) !important;
+    backdrop-filter: blur(10px) !important;
+  }
 
-        /* ---- 3.  Player info under HUD ---- */
-        .player-info { top: 50px; }
+  .hud-button {
+    position: static !important;
+    font-size: 11px !important;
+    padding: 6px 10px !important;
+    border-radius: 6px !important;
+    min-width: 70px !important;
+    flex-shrink: 0 !important;
+  }
 
-        /* ---- 4.  Game board : full width / height ---- */
-        .game-container {
-            left: 0;
-            transform: none;
-            width: 70vw;
-            height: calc(100vh - 210px);   /* 50 HUD + 20 player-info + 160 drawer */
-            top: 70px;
-            padding: 0;
-        }
-        .game-canvas { border-radius: 0; }
+  /* ==== 2. Market + Trade Size ==== */
+  .stake-container {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    flex-wrap: wrap !important;
+  }
 
-        /* ---- 5.  Price scale : small & left ---- */
-        .price-scale {
-            display: block !important;          /* make sure it is visible */
-            left: 0;
-            margin-left: 0;
-            width: 50px;
-            height: 100%;
-            top: 0;
-            transform: none;
-        }
-        .price-tick { font-size: 9px; }
-        .center-button {
-            left: 55px;                /* just right of scale */
-            margin-left: 0;
-            bottom: 20px;
-            top: auto;
-        }
+  .market-section, .trade-size-section {
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    flex-shrink: 0 !important;
+  }
 
-        /* ---- 6.  Leader-board : bottom drawer ---- */
-        .leaderboard-box {
-            position: fixed !important;
-            left: 0 !important;
-            right: 0 !important;
-            bottom: 0 !important;
-            top: auto !important;
-            width: 100vw !important;
-            height: 160px !important;
-            border-radius: 12px 12px 0 0;
-            transform: none !important;
-            z-index: 999 !important;        /* highest */
-            margin: 0 !important;
-        }
-        .leaderboard-header { padding: 8px; font-size: 12px; }
-        .leaderboard-content {
-            height: calc(100% - 45px);
-            animation: none;               /* stop battery-eater scroll */
-            padding: 4px;
-        }
-        .player-item { padding: 6px; margin-bottom: 4px; }
-        .player-avatar { width: 28px; height: 28px; font-size: 14px; }
-        .player-name { font-size: 11px; }
-        .player-time, .player-winrate { font-size: 9px; }
+  .market-label, .trade-label {
+    font-size: 10px !important;
+    color: #8b949e !important;
+    white-space: nowrap !important;
+  }
 
-        /* ---- 7.  Toast above drawer ---- */
-        .toast { bottom: 170px; }
+  .crypto-logo {
+    width: 16px !important;
+    height: 16px !important;
+    flex-shrink: 0 !important;
+  }
 
-        /* ---- 8.  Bet boxes smaller ---- */
-        .bet-box { width: 60px; height: 28px; font-size: 10px; }
+  .market-dropdown {
+    background: #161b22 !important;
+    border: 1px solid #30363d !important;
+    color: white !important;
+    border-radius: 6px !important;
+    padding: 5px 8px !important;
+    font-size: 10px !important;
+    min-width: 80px !important;
+  }
 
-        /* ---- 9.  Kill horizontal scroll ---- */
-        body { overflow-x: hidden; }
-        }
-    </style>
+  .stake-input {
+    background: #161b22 !important;
+    border: 1px solid #30363d !important;
+    color: white !important;
+    width: 60px !important;
+    font-size: 11px !important;
+    text-align: center !important;
+    padding: 5px 6px !important;
+    border-radius: 6px !important;
+  }
+
+  .dollar-sign {
+    font-size: 12px !important;
+    color: white !important;
+  }
+
+  /* ==== 3. Player Info Bar ==== */
+  .player-info {
+    position: fixed !important;
+    top: 55px !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 25px !important;
+    font-size: 10px !important;
+    z-index: 90 !important;
+    background: rgba(13, 17, 23, 0.85) !important;
+  }
+
+  .balance-hud {
+    font-size: 10px !important;
+    color: #22C55E !important;
+  }
+
+  /* ==== 4. Game Area ==== */
+  .game-container {
+    position: fixed !important;
+    top: 80px !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: calc(100vh - 80px - 160px) !important; /* leave space for leaderboard */
+    transform: none !important;
+    padding: 0 !important;
+    z-index: 5 !important;
+  }
+
+  .game-canvas {
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 0 !important;
+  }
+
+  /* ==== 5. Price Scale (Left Edge) ==== */
+  .price-scale {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 55px !important;
+    height: 100% !important;
+    margin: 0 !important;
+    transform: none !important;
+    background: rgba(13, 17, 23, 0.95) !important;
+    border-right: 1px solid #30363d !important;
+    z-index: 7 !important;
+  }
+
+  .price-tick {
+    font-size: 8px !important;
+    right: 3px !important;
+  }
+
+  .price-tick.major {
+    font-size: 9px !important;
+  }
+
+  /* ==== 6. Price Tags ==== */
+  .price-tag {
+    font-size: 11px !important;
+    padding: 2px 5px !important;
+  }
+
+  .price-tag.left {
+    left: 60px !important;
+  }
+
+  .price-tag.right {
+    right: 10px !important;
+  }
+
+  /* ==== 7. Center Button ==== */
+  .center-button {
+    position: absolute !important;
+    left: 8px !important;
+    bottom: 15px !important;
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 14px !important;
+    margin: 0 !important;
+    z-index: 8 !important;
+  }
+
+  /* ==== 8. Leaderboard (Bottom Drawer) ==== */
+  .leaderboard-box {
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    top: auto !important;
+    width: 100vw !important;
+    height: 160px !important;
+    border-radius: 12px 12px 0 0 !important;
+    z-index: 50 !important;
+    background: rgba(13, 17, 23, 0.98) !important;
+    border-top: 1px solid #30363d !important;
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.4) !important;
+  }
+
+  .leaderboard-header {
+    padding: 10px !important;
+    font-size: 12px !important;
+    height: 40px !important;
+    text-align: center !important;
+    color: #22C55E !important;
+    background: rgba(0, 0, 0, 0.8) !important;
+    border-bottom: 1px solid #30363d !important;
+  }
+
+  .leaderboard-content {
+    height: calc(100% - 40px) !important;
+    overflow-y: auto !important;
+    animation: none !important;
+    padding: 6px !important;
+  }
+
+  /* ==== 9. Toasts & Bet Boxes ==== */
+  .toast {
+    bottom: 170px !important;
+    font-size: 12px !important;
+    z-index: 999 !important;
+  }
+
+  .bet-box {
+    width: 60px !important;
+    height: 28px !important;
+    font-size: 10px !important;
+  }
+
+  /* ==== 10. Prevent Scrolling ==== */
+  body, html, .app-container {
+    overflow: hidden !important;
+  }
+
+  /* Hide floating balance badge */
+  .balance-badge {
+    display: none !important;
+  }
+}
+
+
+
+</style>
         </head>
         <body>
             <div id="app">
@@ -1095,6 +1233,8 @@
                     this.updatePriceScale();
                     
                     this.gameLoopId = requestAnimationFrame(animate);
+                    /* inside the animate() loop, right after you compute this.midLineY */
+                document.documentElement.style.setProperty('--midY', this.midLineY);
                 };
                 
                 animate();
