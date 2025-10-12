@@ -47,14 +47,14 @@
         }
         
         .hud-button {
-            background: #238636;
+            background:rgba(192, 244, 85, 0.90);
             border: none;
-            color: white;
+            color: rgb(0, 0, 0);
             padding: 8px 16px;
             border-radius: 6px;
             font-size: 14px;
             cursor: pointer;
-            font-weight: 500;
+            font-weight: 600;
             min-width: 80px;
             transition: background 0.2s;
         }
@@ -70,7 +70,7 @@
         }
         
         .hud-button:hover {
-            background: #2ea043;
+            background: rgba(150, 255, 44, 0.9);
         }
         
         .hud-button:active {
@@ -90,14 +90,9 @@
         }
 
         .market-label {
-            color: #8b949e;
+            color: #ffffff;
             font-size: 12px;
-            font-weight: 500;
-        }
-
-        .eth-logo {
-            width: 20px;
-            height: 20px;
+            font-weight: 600;
         }
 
         .pair-label {
@@ -122,7 +117,7 @@
         }
 
         .market-dropdown:hover {
-            border-color: #238636;
+            border-color: rgba(150, 255, 44, 0.9);;
         }
 
         .crypto-logo {
@@ -137,7 +132,7 @@
         }
 
         .trade-label {
-            color: #8b949e;
+            color: #ffffff;
             font-size: 12px;
             font-weight: 500;
         }
@@ -161,7 +156,7 @@
         
         .stake-input:focus {
             outline: none;
-            border-color: #238636;
+            border-color: rgba(150, 255, 44, 0.9);
         }
             
             .player-info {
@@ -192,7 +187,7 @@
         }
                 
         .balance-hud {
-            color: #22C55E;
+            color: rgba(192, 244, 85, 0.90);
             font-weight: 600;
         }
         
@@ -219,7 +214,7 @@
             bottom: 30px;
             left: 50%;
             transform: translateX(-50%);
-            background: #238636;
+            background: rgba(192, 244, 85, 0.90);
             padding: 10px 20px;
             border-radius: 20px;
             font-size: 16px;
@@ -242,9 +237,9 @@
         }
         
         .launch-button {
-            background: #238636;
+            background: rgba(192, 244, 85, 0.90);
             border: none;
-            color: white;
+            color: rgb(0, 0, 0);
             padding: 20px 40px;
             border-radius: 12px;
             font-size: 20px;
@@ -255,7 +250,7 @@
         }
         
         .launch-button:hover {
-            background: #2ea043;
+            background: rgba(150, 255, 44, 0.9);
             transform: translateY(-2px);
             box-shadow: 0 12px 32px rgba(35, 134, 54, 0.4);
         }
@@ -356,14 +351,14 @@
         }
         
         .bet-box.win {
-            background: #22C55E;
-            color: white;
+            background: rgba(192, 244, 85, 0.90);
+            color: rgb(0, 0, 0);
             animation: winPulse 0.5s ease-out;
         }
         
         .bet-box.lose {
-            background: #EF4444;
-            color: white;
+            background: rgba(249, 72, 170, 0.90);
+            color: rgb(0, 0, 0);
             animation: losePulse 0.5s ease-out;
         }
         
@@ -387,7 +382,7 @@
             transform: translateX(-50%);
             padding: 12px 24px;
             border-radius: 8px;
-            color: white;
+            color: rgb(0, 0, 0);
             font-size: 14px;
             font-weight: 600;
             z-index: 25;
@@ -398,11 +393,11 @@
         }
                 
         .toast.win {
-            background: #22C55E;
+            background: rgba(192, 244, 85, 0.90);
         }
         
         .toast.lose {
-            background: #EF4444;
+            background: rgba(249, 72, 170, 0.90);
         }
         
         @keyframes toastSlideUp {
@@ -432,7 +427,7 @@
             border: 1px solid #30363d;
             z-index: 6;
             pointer-events: none;
-            transition: color 0.3s ease;  /* ⬅️ BAS YEH LINE ADD KAREIN */
+            transition: color 0.3s ease;
         }
                 
         .price-tag.left {
@@ -483,7 +478,7 @@
                 border-bottom: 1px solid #30363d;
                 font-weight: 600;
                 font-size: 14px;
-                color: #22C55E;
+                color: rgba(150, 255, 44, 0.9);
                 position: sticky;        
                 top: 0;                  
                 z-index: 10;             
@@ -566,7 +561,7 @@
 
             .player-winrate.high {
                 background: rgba(34, 197, 94, 0.2);
-                color: #22C55E;
+                color: #22C55E ;
             }
 
             .player-winrate.medium {
@@ -583,13 +578,13 @@
             .price-scale {
                 position: absolute;
                 left: 50%;
-                top: 205px;
+                top: 199px;
                 width: 80px;
-                height: 400px;
+                height: 397px;
                 margin-left: -267px;
                 transform: none;
                 background: rgba(13, 17, 23, 0.95);
-                border-right: 1px solid #30363d;
+                border-right: 3px solid #30363d;
                 z-index: 7;
                 overflow: hidden;
                 transform: translateY(-50%);
@@ -639,10 +634,10 @@
                 width: 35px;
                 height: 35px;
                 margin-left: -237px;
-                background: #238636;
+                background: rgba(192, 244, 85, 0.90);
                 border: none;
                 border-radius: 6px;
-                color: white;
+                color: rgb(0, 0, 0);
                 font-size: 16px;
                 cursor: pointer;
                 z-index: 8;
@@ -737,7 +732,7 @@
 
   .market-label, .trade-label {
     font-size: 10px !important;
-    color: #8b949e !important;
+    color: #ffffff !important;
     white-space: nowrap !important;
   }
 
@@ -787,7 +782,7 @@
 
   .balance-hud {
     font-size: 10px !important;
-    color: #22C55E !important;
+    color: rgba(192, 244, 85, 0.90)
   }
 
   /* ==== 4. Game Area ==== */
@@ -1003,10 +998,10 @@
                 <rect x="315" y="0" width="60" height="400" fill="#2A2A2A" />
 
                 <!-- Dynamic green bar -->
-                <rect id="greenBar" x="0" y="170" width="315" height="30" fill="#22C55E" opacity="0.60" />
+                <rect id="greenBar" x="0" y="170" width="315" height="30" fill="#c0f455" opacity="0.90" />
 
                 <!-- Dynamic red bar -->
-                <rect id="redBar" x="0" y="202" width="315" height="30" fill="#EF4444" opacity="0.60" />
+                <rect id="redBar" x="0" y="202" width="315" height="30" fill="#f948aa" opacity="0.90" />
 
                 <!-- White mid-line -->
                 <line id="midLine" x1="0" y1="200" x2="375" y2="200" stroke="white" stroke-width="2" />
