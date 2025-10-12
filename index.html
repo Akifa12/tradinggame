@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ultra-Minimal Trading Game</title>
     <style>
@@ -76,6 +77,23 @@
         .hud-button:active {
             transform: scale(0.98);
         }
+        @media (max-width: 375px) {
+            .hud {
+                padding: 0 10px;
+                gap: 10px;
+                font-size: 11px;
+            }
+            .market-dropdown,
+            .stake-input {
+                font-size: 11px;
+                padding: 4px 6px;
+            }
+            .hud-button {
+                padding: 6px 10px;
+                font-size: 11px;
+                min-width: 60px;
+            }
+            }
         
         .stake-container {
             display: flex;
@@ -603,6 +621,102 @@
                 color: #EF4444;
             }
 
+            /* Price Scale - Left Side */
+            .price-scale {
+                position: absolute;
+                left: 50%;
+                top: 205px;
+                width: 80px;
+                height: 400px;
+                margin-left: -267px;
+                transform: none;
+                background: rgba(13, 17, 23, 0.95);
+                border-right: 1px solid #30363d;
+                z-index: 7;
+                overflow: hidden;
+                transform: translateY(-50%);
+            }
+
+            .price-scale-inner {
+                position: relative;
+                width: 100%;
+                height: 100%;
+                transition: transform 0.1s linear;
+            }
+
+            .price-tick {
+                position: absolute;
+                right: 5px;
+                font-size: 10px;
+                color: #8b949e;
+                font-weight: 600;
+                white-space: nowrap;
+                padding: 2px 4px;
+            }
+
+            .price-tick.major {
+                color: white;
+                font-size: 11px;
+            }
+
+            .price-tick-line {
+                position: absolute;
+                right: 0;
+                width: 5px;
+                height: 1px;
+                background: #30363d;
+            }
+
+            .price-tick-line.major {
+                width: 8px;
+                background: #484f58;
+            }
+
+            @media (max-width: 375px) {
+                .price-scale {
+                    width: 40px;               /* thinner */
+                    margin-left: -227px;       /* re-centre over game-box */
+                }
+                .price-tick {
+                    font-size: 8px;            /* smaller text */
+                }
+                .price-tick.major {
+                    font-size: 9px;
+                }
+                }
+
+            /* Center Button */
+            .center-button {
+                position: absolute;
+                left: 50%;
+                bottom: auto;
+                top: 400px;
+                width: 35px;
+                height: 35px;
+                margin-left: -237px;
+                background: #238636;
+                border: none;
+                border-radius: 6px;
+                color: white;
+                font-size: 16px;
+                cursor: pointer;
+                z-index: 8;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 2px 8px rgba(35, 134, 54, 0.3);
+                transition: all 0.2s;
+            }
+
+            .center-button:hover {
+                background: #2ea043;
+                transform: scale(1.05);
+            }
+
+            .center-button:active {
+                transform: scale(0.95);
+            }
+
             /* Scrollbar styling */
             .leaderboard-content::-webkit-scrollbar {
                 width: 4px;
@@ -619,6 +733,31 @@
 
             .leaderboard-content::-webkit-scrollbar-thumb:hover {
                 background: #484f58;
+            }
+
+
+            /* ======  PHONE  –  bottom drawer  ====== */
+            @media (max-width: 375px) {
+            .leaderboard-box {
+                position: fixed;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                top: auto;
+                width: 100%;
+                height: 180px;          /* peek height */
+                border-radius: 12px 12px 0 0;
+                transform: none;
+                z-index: 15;
+            }
+            .leaderboard-content {
+                height: 130px;
+                animation: none;        /* stop auto-scroll */
+            }
+            /* hide on tap (optional) */
+            .leaderboard-box:active {
+                height: 60px;
+            }
             }
 
     </style>
@@ -671,7 +810,7 @@
                 </div>
                         <span class="balance-hud" id="balanceHud">Balance: 42.30 USDC</span>
                     </div>
-                    
+ 
                     <!-- Player Leaderboard -->
                     <div class="leaderboard-box">
                         <div class="leaderboard-header">👥 LIVE PLAYERS</div>
@@ -681,6 +820,17 @@
                     </div>
 
                     <div class="game-container">
+                        
+                    <!-- Price Scale - Left Side -->
+                <div class="price-scale">
+                    <div class="price-scale-inner" id="priceScaleInner">
+                        <!-- Ticks will be added dynamically -->
+                    </div>
+                </div>
+
+                <!-- Center Button -->
+                <button class="center-button" id="centerButton" title="Center Mid-line">⊙</button>
+                   
                     <svg
                         class="game-canvas"
                         id="gameCanvas"
@@ -785,6 +935,14 @@
     </div>
 
     <script>
+
+        // ===== REAL-TIME PYTH FEEDS =====
+            const FEEDS = {
+            ETH: '0xff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace',
+            SOL: '0xef0d8b6fda2ceba41da15d4095d1da392a0d2f8ed0c6c7bc0f4cfac8c280b56d',
+            BTC: '0xe62df6c8b4a85fe1a67db44dc12de5db330f7ac66b72dc658afedf0f4a415b43'
+            };
+
         class TradingGame {
             constructor() {
                 this.launched = false;
@@ -803,6 +961,7 @@
                 this.bindEvents();
                 this.startMockUpdates();
                 this.initializePlayers();
+
             }
             
             initializeElements() {
@@ -821,6 +980,8 @@
                 this.toastContainer = document.getElementById('toastContainer');
                 this.marketDropdown = document.getElementById('marketDropdown');
                 this.cryptoLogo = document.getElementById('cryptoLogo');
+                this.priceScaleInner = document.getElementById('priceScaleInner');
+                this.centerButton = document.getElementById('centerButton');
                 
                 // Modal elements
                 this.depositModal = document.getElementById('depositModal');
@@ -838,7 +999,7 @@
                 this.gameCanvas.addEventListener('click', (e) => this.handleCanvasClick(e));
                 this.stakeInput.addEventListener('change', (e) => this.updateStake(e));
                 this.marketDropdown.addEventListener('change', (e) => this.changeMarket(e.target.value));
-    
+                this.centerButton.addEventListener('click', () => this.centerMidLine());
     
                 // Modal events
                 this.depositBtn.addEventListener('click', () => this.showDepositModal());
@@ -866,8 +1027,22 @@
                 const animate = () => {
                     this.animationTime += 1;
                     
-                    // Calculate new Y position using sine wave
-                    this.midLineY = 200 + 80 * Math.sin(this.animationTime / 600);
+          
+                   // micro-sensitive price → screen Y  (160-240 px)
+                const priceBand = { SOL: { min: 149, max: 151 },
+                                    ETH: { min: 3829, max: 3831 },   // 2$ band around current
+                                    BTC: { min: 68999, max: 69001 } };
+                let { min, max } = priceBand[this.currentMarket] || priceBand.ETH;
+
+                // auto-shift band every 5 seconds so line never leaves screen
+                if (this.currentPrice < min || this.currentPrice > max) {
+                    const mid = this.currentPrice;
+                    min = mid - (max - min) / 2;
+                    max = mid + (max - min) / 2;
+                }
+
+                const percent = (this.currentPrice - min) / (max - min);
+                this.midLineY = 160 + percent * 80;          // 160-240 px range
 
                     // ---------- NEW DYNAMIC BARS ----------
                     const direction = Math.sin(this.animationTime / 600) -
@@ -901,6 +1076,7 @@
                     
                     // Update box positions
                     this.updateBoxes();
+                    this.updatePriceScale();
                     
                     this.gameLoopId = requestAnimationFrame(animate);
                 };
@@ -969,62 +1145,129 @@
         }
             
             updateBoxes() {
-    for (let i = 0; i < this.boxes.length; i++) {
-        const box = this.boxes[i];
-        
-        if (!box.settled) {
-            box.x += 2;
-    
-            if (box.element) {
-                box.element.style.left = box.x + 'px';
-            }
-    
-            // Check if box reached finish line
-            if (box.x >= 315) {
-                box.settled = true;
+                for (let i = 0; i < this.boxes.length; i++) {
+                    const box = this.boxes[i];
+                    
+                    if (!box.settled) {
+                        box.x += 2;
                 
-                // Calculate profit/loss based on mid-line movement
-                let won = false;
-                if (box.side === 'long') {
-                    won = this.currentPrice > box.entryPrice;
-                } else if (box.side === 'short') {
-                    won = this.currentPrice < box.entryPrice;
-                }                
+                        if (box.element) {
+                            box.element.style.left = box.x + 'px';
+                        }
                 
-                if (box.element) {
-                    box.element.classList.add(won ? 'win' : 'lose');
+                        // Check if box reached finish line
+                        if (box.x >= 315) {
+                            box.settled = true;
+                            
+                            // Calculate profit/loss based on mid-line movement
+                            let won = false;
+                            if (box.side === 'long') {
+                                won = this.currentPrice > box.entryPrice;
+                            } else if (box.side === 'short') {
+                                won = this.currentPrice < box.entryPrice;
+                            }                
+                            
+                            if (box.element) {
+                                box.element.classList.add(won ? 'win' : 'lose');
+                            }
+                            
+                            // Update balance (without blocking)
+                            const stakeAmount = box.stake;
+                            const isWin = won;
+                            
+                            setTimeout(() => {
+                                if (isWin) {
+                                    this.balance += stakeAmount;
+                                    this.showToast('CREDITED', '+' + stakeAmount.toFixed(2), true);
+                                } else {
+                                    this.balance -= stakeAmount;
+                                    this.showToast('DEBITED', '-' + stakeAmount.toFixed(2), false);
+                                }
+                                this.updateBalanceDisplay();
+                            }, 0);
+                            
+                            // Remove box after animation
+                            setTimeout(() => {
+                                if (box.element && box.element.parentNode) {
+                                    box.element.remove();
+                                }
+                            }, 1000);
+                            
+                            // Mark for removal
+                            this.boxes.splice(i, 1);
+                            i--;
+                        }
+                    }
                 }
-                
-                // Update balance (without blocking)
-                const stakeAmount = box.stake;
-                const isWin = won;
-                
-                setTimeout(() => {
-                    if (isWin) {
-                        this.balance += stakeAmount;
-                        this.showToast('CREDITED', '+' + stakeAmount.toFixed(2), true);
-                    } else {
-                        this.balance -= stakeAmount;
-                        this.showToast('DEBITED', '-' + stakeAmount.toFixed(2), false);
-                    }
-                    this.updateBalanceDisplay();
-                }, 0);
-                
-                // Remove box after animation
-                setTimeout(() => {
-                    if (box.element && box.element.parentNode) {
-                        box.element.remove();
-                    }
-                }, 1000);
-                
-                // Mark for removal
-                this.boxes.splice(i, 1);
-                i--;
             }
-        }
-    }
-}
-            
+                        
+                        updatePriceScale() {
+                const mid = this.currentPrice;
+                const stepPct = 0.004;                 // 0.4 %
+                const pxPerLabel = 40;                 // 400 px / 10 labels
+                const priceStep = mid * stepPct;       // $ value per step
+                this.priceScaleInner.innerHTML = '';   // clear old
+
+                for (let i = 0; i < 10; i++) {
+                    const y = i * pxPerLabel;
+                    const price = mid + (5 - i) * priceStep; // 5 above, 5 below mid
+                    const isMajor = i % 2 === 0;             // bold every 2nd
+
+                    // tick line
+                    const line = document.createElement('div');
+                    line.className = `price-tick-line ${isMajor ? 'major' : ''}`;
+                    line.style.top = y + 'px';
+                    this.priceScaleInner.appendChild(line);
+
+                    // label
+                    const lab = document.createElement('div');
+                    lab.className = `price-tick ${isMajor ? 'major' : ''}`;
+                    lab.style.top = (y - 6) + 'px';
+                    lab.textContent = price.toFixed(4);
+                    this.priceScaleInner.appendChild(lab);
+                }
+            }
+            getPricePerPixel() {
+                // Different zoom levels for different markets
+                const zooms = {
+                    'ETH': 0.5,   // $0.50 per pixel
+                    'SOL': 0.05,  // $0.05 per pixel
+                    'BTC': 5      // $5 per pixel
+                };
+                return zooms[this.currentMarket] || 1;
+            }
+
+                centerMidLine() {
+                    const gameHeight = 400;                 // game-box px height
+                    const targetY  = gameHeight / 2;        // exact centre (200 px)
+                    const currentY = this.midLineY;
+                    const duration = 500;                   // 500 ms glide
+                    const startTime = Date.now();
+
+                    // price-band re-centre → current price becomes mid-price
+                    const midPrice = this.currentPrice;
+                    const zooms = { ETH: 2, SOL: 0.2, BTC: 200 };
+                    const width = zooms[this.currentMarket] || 2;
+                    this.priceBand = {
+                        min: midPrice - width,
+                        max: midPrice + width
+                    };
+
+                    // glide both mid-line & scale together
+                    const glide = () => {
+                        const elapsed = Date.now() - startTime;
+                        const progress = Math.min(elapsed / duration, 1);
+                        const ease = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+
+                        this.midLineY = currentY + (targetY - currentY) * ease;
+                        this.updatePriceScale(); // re-draw labels centred
+
+                        if (progress < 1) requestAnimationFrame(glide);
+                    };
+                    glide();
+                }
+
+
             updateStake(e) {
                 const value = parseFloat(e.target.value) || 0.5;
                 this.stake = Math.max(0.5, Math.min(12, value));
@@ -1100,22 +1343,33 @@
                 this.leftPriceTag.textContent = '$' + this.currentPrice.toFixed(4);
                 this.rightPriceTag.textContent = '$' + this.currentPrice.toFixed(4);
             }
-                            
+
+            // ---- fetch real price for chosen market ----
+            async fetchRealPrice(market) {
+            try {
+                const id   = FEEDS[market];
+                const url  = `https://hermes.pyth.network/api/latest_price_feeds?ids[]=${id}`;
+                const res  = await fetch(url);
+                const data = await res.json();
+                const p    = data[0].price;
+                return Number(p.price) * Math.pow(10, Number(p.expo));
+            } catch (e) {
+                console.warn('Pyth fetch failed', e);
+                return this.currentPrice;   // fallback
+            }
+            }
             
             startMockUpdates() {
                 // Mock price updates
                 let displayedPrice = this.currentPrice;
                 
                 // âœ… STEP 2B: Actual price update (fast) - market-based volatility
+               // REAL price every 400 ms – no mock, no reset of displayedPrice
                 setInterval(() => {
-                    const volatility = {
-                        'SOL': 2,      // ±$2
-                        'ETH': 10,     // ±$10
-                        'BTC': 100     // ±$100
-                    };
-                    const change = volatility[this.currentMarket] || 10;
-                    this.currentPrice += (Math.random() - 0.5) * change;
-                }, 400);    
+                this.fetchRealPrice(this.currentMarket).then(real => {
+                    this.currentPrice = real;   // only update raw price
+                }).catch(() => {});           // silent fail
+                }, 400);
                 
                 // ✅ STEP 2C: Display price update (smooth tween animation)
                 setInterval(() => {
