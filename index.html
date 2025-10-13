@@ -47,7 +47,7 @@
         }
         
         .hud-button {
-            background:rgba(150, 255, 44, 1);
+            background:rgba(150, 255, 44, 0.7);
             border: none;
             color: rgb(0, 0, 0);
             padding: 8px 16px;
@@ -187,7 +187,7 @@
         }
                 
         .balance-hud {
-            color: rgba(150, 255, 44, 1);
+            color: rgba(150, 255, 44, 0.7);
             font-weight: 600;
         }
         
@@ -214,7 +214,7 @@
             bottom: 30px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(150, 255, 44, 1);
+            background: rgba(150, 255, 44, 0.7);
             padding: 10px 20px;
             border-radius: 20px;
             font-size: 16px;
@@ -237,7 +237,7 @@
         }
         
         .launch-button {
-            background: rgba(150, 255, 44, 1);
+            background: rgba(150, 255, 44, 0.7);
             border: none;
             color: rgb(0, 0, 0);
             padding: 20px 40px;
@@ -351,13 +351,13 @@
         }
         
         .bet-box.win {
-            background: rgba(150, 255, 44, 1);
+            background: rgba(150, 255, 44, 0.7);
             color: rgb(0, 0, 0);
             animation: winPulse 0.5s ease-out;
         }
         
         .bet-box.lose {
-            background: rgba(249, 72, 170, 0.90);
+            background: rgba(249, 72, 170, 0.7);
             color: rgb(0, 0, 0);
             animation: losePulse 0.5s ease-out;
         }
@@ -393,11 +393,11 @@
         }
                 
         .toast.win {
-            background: rgba(150, 255, 44, 1);
+            background: rgba(150, 255, 44, 0.7);
         }
         
         .toast.lose {
-            background: rgba(249, 72, 170, 0.90);
+            background: rgba(249, 72, 170, 0.7);
         }
         
         @keyframes toastSlideUp {
@@ -576,10 +576,10 @@
 
             /* Price Scale - Left Side */
             .price-scale {
-                position: absolute;
-                left: 50%;
+                position:absolute;
+                left: 48.5%;
                 top: 199px;
-                width: 80px;
+                width:85px;
                 height: 397px;
                 margin-left: -267px;
                 transform: none;
@@ -593,7 +593,7 @@
             .price-scale-inner {
                 position: relative;
                 width: 100%;
-                height: 100%;
+                height: 400px;
                 transition: transform 0.1s linear;
             }
 
@@ -614,15 +614,16 @@
 
             .price-tick-line {
                 position: absolute;
-                right: 0;
+                left: 77px !important;
                 width: 5px;
                 height: 1px;
-                background: #30363d;
+                background: #6e6f70;
             }
 
             .price-tick-line.major {
                 width: 8px;
-                background: #484f58;
+                left: 75px !important;
+                background: #6e6f70;
             }
 
             /* Center Button */
@@ -634,7 +635,7 @@
                 width: 35px;
                 height: 35px;
                 margin-left: -237px;
-                background: rgba(150, 255, 44, 1);
+                background: rgba(150, 255, 44, 0.7);
                 border: none;
                 border-radius: 6px;
                 color: rgb(0, 0, 0);
@@ -783,7 +784,7 @@
 
         .balance-hud {
             font-size: 10px !important;
-            color: rgba(150, 255, 44, 1)
+            color: rgba(150, 255, 44, 0.7)
         }
 
         /* ==== 4. Game Area ==== */
@@ -810,9 +811,9 @@
 
         /* ==== 5. Price Scale (Left Edge) ==== */
         .price-scale {
-            left: -50px !important;
+            left: -61px !important;
             top: 117px !important;
-            width: 55px !important;
+            width: 60px !important;
             height: 317px !important;
             margin: 0 !important;
             transform: none !important;
@@ -829,7 +830,20 @@
         .price-tick.major {
             font-size: 9px !important;
         }
+        
+            .price-tick-line {
+                position: absolute;
+                left: 54px !important;
+                width: 5px;
+                height: 1px;
+                background: #6e6f70;
+            }
 
+            .price-tick-line.major {
+                width: 8px;
+                left: 55px !important;
+                background: #6e6f70;
+            }
         /* ==== 6. Price Tags ==== */
         .
         .price-tag {
@@ -890,7 +904,7 @@
             font-size: 12px !important;
             height: 40px !important;
             text-align: center !important;
-            color: rgba(150, 255, 44, 1) !important;
+            color: rgba(150, 255, 44, 0.7) !important;
             background: rgba(0, 0, 0, 0.8) !important;
             border-bottom: 1px solid #30363d !important;
         }
@@ -1117,16 +1131,26 @@
                 this.boxes = [];
                 this.currentMarket = 'ETH';
                 this.currentPrice = 2500.00;
+                this.scaleCenterPrice = this.currentPrice;
+                this.pixelsPerPrice = 2;
+                this.scaleHeight = 400;
+                this.tickPx = 40;
                 this.playerCount = 12;
                 this.animationTime = 0;
                 this.midLineY = 200;
                 this.gameLoopId = null;
                 this.toastContainer = null;
+               
+
                 
                 this.initializeElements();
                 this.bindEvents();
                 this.startMockUpdates();
                 this.initializePlayers();
+                // --- draw initial scale ticks once ---
+this.pixelsPerPrice = this.getPricePerPixel();
+this.drawTicks();
+
 
             }
             
@@ -1211,22 +1235,24 @@
                 this.midLineY = 160 + percent * 80;          // 160-240 px range
 
                     // ---------- NEW DYNAMIC BARS ----------
-                    const direction = Math.sin(this.animationTime / 600) -
-                                    Math.sin((this.animationTime - 2) / 600);
+                    const centerY = 200; // middle of chart
+this.pixelsPerPrice = this.getPricePerPixel();
 
-                    const greenH = Math.max(0, this.midLineY);
-                    const greenY = 0;
+const priceOffset = this.currentPrice - this.scaleCenterPrice;
+const pixelOffset = priceOffset * this.pixelsPerPrice;
 
-                    // RED: height = distance from mid-line to BOTTOM (grows UP)
-                    const redH = Math.max(0, 400 - this.midLineY);
-                    const redY = this.midLineY;
+// invert so higher price = line moves up
+this.midLineY = centerY - pixelOffset;
+this.midLineY = Math.max(0, Math.min(400, this.midLineY));
 
+// dynamic bars update
+const greenH = Math.max(0, this.midLineY);
+const redH = Math.max(0, 400 - this.midLineY);
 
-                    this.greenBar.setAttribute('y',      greenY);
-                    this.greenBar.setAttribute('height', greenH);
-                    this.redBar.setAttribute('y',      redY);
-                    this.redBar.setAttribute('height', redH);
-
+this.greenBar.setAttribute('y', 0);
+this.greenBar.setAttribute('height', greenH);
+this.redBar.setAttribute('y', this.midLineY);
+this.redBar.setAttribute('height', redH);
                     // update white mid-line
                     this.midLine.setAttribute('y1', this.midLineY);
                     this.midLine.setAttribute('y2', this.midLineY);
@@ -1369,71 +1395,92 @@
                 }
             }
                         
-                        updatePriceScale() {
-                const mid = this.currentPrice;
-                const stepPct = 0.004;                 // 0.4 %
-                const pxPerLabel = 40;                 // 400 px / 10 labels
-                const priceStep = mid * stepPct;       // $ value per step
-                this.priceScaleInner.innerHTML = '';   // clear old
+                updatePriceScale() {
+  const centerY = this.scaleHeight / 2;
+  const priceOffset = this.currentPrice - this.scaleCenterPrice;
+  const pixelOffset = priceOffset * this.pixelsPerPrice;
 
-                for (let i = 0; i < 10; i++) {
-                    const y = i * pxPerLabel;
-                    const price = mid + (5 - i) * priceStep; // 5 above, 5 below mid
-                    const isMajor = i % 2 === 0;             // bold every 2nd
+  // only recentre when price leaves visible range
+  const thresholdPx = this.scaleHeight / 2.5; // tweak for sensitivity
+  if (Math.abs(pixelOffset) > thresholdPx) {
+    this.scaleCenterPrice = this.currentPrice;
+    this.drawTicks(); // regenerate ticks
+  }
+}
 
-                    // tick line
-                    const line = document.createElement('div');
-                    line.className = `price-tick-line ${isMajor ? 'major' : ''}`;
-                    line.style.top = y + 'px';
-                    this.priceScaleInner.appendChild(line);
+            drawTicks() {
+  const inner = this.priceScaleInner;
+  inner.innerHTML = '';
 
-                    // label
-                    const lab = document.createElement('div');
-                    lab.className = `price-tick ${isMajor ? 'major' : ''}`;
-                    lab.style.top = (y - 6) + 'px';
-                    lab.textContent = price.toFixed(4);
-                    this.priceScaleInner.appendChild(lab);
-                }
-            }
+  const stepPx = this.tickPx;
+  const stepPrice = stepPx / this.pixelsPerPrice;
+  const ticksEachSide = Math.ceil(this.scaleHeight / stepPx) + 2;
+  const centerY = this.scaleHeight / 2;
+
+  for (let i = -ticksEachSide; i <= ticksEachSide; i++) {
+    const y = centerY - (i * stepPx);
+    const price = this.scaleCenterPrice + (i * stepPrice);
+
+    const line = document.createElement('div');
+    line.className = `price-tick-line ${i % 2 === 0 ? 'major' : ''}`;
+    line.style.position = 'absolute';
+    line.style.left = '0';
+    line.style.right = '0';
+    line.style.height = '1px';
+    line.style.top = `${y}px`;
+    inner.appendChild(line);
+
+    const lab = document.createElement('div');
+    lab.className = `price-tick ${i % 2 === 0 ? 'major' : ''}`;
+    lab.style.position = 'absolute';
+    lab.style.left = '6px';
+    lab.style.top = `${y - 8}px`;
+    lab.textContent = price.toFixed(4);
+    inner.appendChild(lab);
+  }
+}
+
             getPricePerPixel() {
                 // Different zoom levels for different markets
                 const zooms = {
-                    'ETH': 0.5,   // $0.50 per pixel
-                    'SOL': 0.05,  // $0.05 per pixel
-                    'BTC': 5      // $5 per pixel
+                    'ETH': 9,   // $0.50 per pixel
+                    'SOL': 9,  // $0.05 per pixel
+                    'BTC': 3      // $5 per pixel
                 };
                 return zooms[this.currentMarket] || 1;
             }
 
                 centerMidLine() {
-                    const gameHeight = 400;                 // game-box px height
-                    const targetY  = gameHeight / 2;        // exact centre (200 px)
-                    const currentY = this.midLineY;
-                    const duration = 500;                   // 500 ms glide
-                    const startTime = Date.now();
+  const gameHeight = 400;
+  const targetY = gameHeight / 2;
+  const currentY = this.midLineY;
+  const duration = 400;
+  const startTime = Date.now();
 
-                    // price-band re-centre → current price becomes mid-price
-                    const midPrice = this.currentPrice;
-                    const zooms = { ETH: 2, SOL: 0.2, BTC: 200 };
-                    const width = zooms[this.currentMarket] || 2;
-                    this.priceBand = {
-                        min: midPrice - width,
-                        max: midPrice + width
-                    };
+  const glide = () => {
+    const elapsed = Date.now() - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const ease = 1 - Math.pow(1 - progress, 3);
 
-                    // glide both mid-line & scale together
-                    const glide = () => {
-                        const elapsed = Date.now() - startTime;
-                        const progress = Math.min(elapsed / duration, 1);
-                        const ease = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+    this.midLineY = currentY + (targetY - currentY) * ease;
 
-                        this.midLineY = currentY + (targetY - currentY) * ease;
-                        this.updatePriceScale(); // re-draw labels centred
+    this.midLine.setAttribute('y1', this.midLineY);
+    this.midLine.setAttribute('y2', this.midLineY);
+    this.greenBar.setAttribute('height', Math.max(0, this.midLineY));
+    this.redBar.setAttribute('y', this.midLineY);
+    this.redBar.setAttribute('height', Math.max(0, 400 - this.midLineY));
 
-                        if (progress < 1) requestAnimationFrame(glide);
-                    };
-                    glide();
-                }
+    document.getElementById('topShadow').setAttribute('y1', this.midLineY - 30);
+    document.getElementById('topShadow').setAttribute('y2', this.midLineY - 30);
+
+    if (progress < 1) requestAnimationFrame(glide);
+    else {
+      this.scaleCenterPrice = this.currentPrice;
+      this.drawTicks();
+    }
+  };
+  glide();
+}
 
 
             updateStake(e) {
@@ -1484,6 +1531,10 @@
             
             changeMarket(market) {
                 this.currentMarket = market;
+                this.scaleCenterPrice = this.currentPrice;
+this.pixelsPerPrice = this.getPricePerPixel();
+this.drawTicks();
+
                 
                 // Proper SVG logos with correct viewBox attributes
                 if (market === 'SOL') {
@@ -1554,11 +1605,11 @@
                     
                     // Update colors based on direction
                     if (displayedPrice > oldDisplayPrice) {
-                        this.leftPriceTag.style.color = '#22C55E';
-                        this.rightPriceTag.style.color = '#22C55E';
+                        this.leftPriceTag.style.color = '#96FF2C';
+                        this.rightPriceTag.style.color = '#96FF2C';
                     } else if (displayedPrice < oldDisplayPrice) {
-                        this.leftPriceTag.style.color = '#EF4444';
-                        this.rightPriceTag.style.color = '#EF4444';
+                        this.leftPriceTag.style.color = '#f948aa';
+                        this.rightPriceTag.style.color = '#f948aa';
                     } else {
                         this.leftPriceTag.style.color = 'white';
                         this.rightPriceTag.style.color = 'white';
